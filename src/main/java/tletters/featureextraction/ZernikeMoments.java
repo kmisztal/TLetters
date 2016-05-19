@@ -1,21 +1,16 @@
 package tletters.featureextraction;
 
 import org.apache.commons.math3.complex.Complex;
-
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ZernikeMoments implements ExtractionAlgorithm {
 
+    public ZernikeMoments(){}
+
     private int imsize;
-    private static int order = 15;
-
-    ZernikeMoments(){}
-    ZernikeMoments(int order){
-        this.order = order;
-    }
-
+    private static int order = 12;  //for order<13 works well, but for larger odrder there are numerical errors
 
     public double[] extractFeatures(BufferedImage bufferedImage) {
 
@@ -34,16 +29,25 @@ public class ZernikeMoments implements ExtractionAlgorithm {
         }else{
             imsize=bufferedImage.getHeight();
         }
-        int[][] pixels = new int[imsize][imsize]; //przycinanie
-        for( int i = 0; i < imsize; i++ )
-            for( int j = 0; j < imsize; j++ )
-                pixels[i][j] = bufferedImage.getRGB(i, j);
+        int[][] pixels = new int[imsize][imsize]; //cutting and prepearing image
+        for( int i = 0; i < imsize; i++ ){
+            for( int j = 0; j < imsize; j++ ) {
+                int temp = bufferedImage.getRGB(i, j);
+                if (temp == -1) {
+                    pixels[j][i] = 1;
+                } else {
+                    pixels[j][i] = 0;
+                }
+            }
+        }
 
-        MyZernike zs1=zernike_bf(imsize,order);
-        Complex[] v1=zernike_mom(pixels,zs1);
-        double[] v1ABS = new double[v1.length];
+        MyZernike zs1=zernike_bf(imsize,order); //computing Zernike base functions
+        Complex[] v1=zernike_mom(pixels,zs1);   //computing Zernike moments
+
+        double[] v1ABS = new double[v1.length]; //getting abs from complex moments
         for(int i=0; i<v1.length; i++)
             v1ABS[i] = v1[i].abs();
+
         return v1ABS;
     }
 
@@ -126,7 +130,7 @@ public class ZernikeMoments implements ExtractionAlgorithm {
 
     public Complex multyply(Complex a, Complex b) {
         return new Complex(a.getReal()*b.getReal() - a.getImaginary()*b.getImaginary(),
-                            a.getReal()*b.getImaginary() + a.getImaginary()*b.getReal());
+                a.getReal()*b.getImaginary() + a.getImaginary()*b.getReal());
     }
 
     public Complex exp(Complex c) {
@@ -146,15 +150,13 @@ public class ZernikeMoments implements ExtractionAlgorithm {
 
         for(int flat=0; flat<len; flat++){
             int m=pq.get(flat)[0];
-  //---------------------------------------------------
             Z[flat] = new Complex((m+1)/Math.PI);
             Complex temp = new Complex(0,0);
-            for(int x=0; x<I[0].length; x++){           //TODO sprawdzic
+            for(int x=0; x<I[0].length; x++){
                 for(int y=0; y<I[0].length; y++){
                     temp = temp.add(multyply(new Complex(I[x][y],0) , bf[x][y][flat].conjugate()));
                 }
             }
-  //--------------------------------------------------
 
             Z[flat] = multyply(Z[flat],temp);
         }
