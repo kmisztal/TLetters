@@ -1,18 +1,21 @@
-package tletters.test;
+package tletters.glyphclassification;
 
 import tletters.glyph.Glyph;
-import tletters.knnclassifier.Classifier;
-import tletters.knnclassifier.DistanceMeter;
+import tletters.knnclassification.Classifier;
+import tletters.knnclassification.DistanceMeter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class Test {
+public class GlyphClassifier {
+
     private Classifier classifier;
     private DistanceMeter distanceMeter;
     private List<Glyph> glyphs;
 
-    public Test(Classifier classifier, DistanceMeter distanceMeter, List<Glyph> glyphs) {
+    public GlyphClassifier(Classifier classifier, DistanceMeter distanceMeter, List<Glyph> glyphs) {
         this.classifier = classifier;
         this.distanceMeter = distanceMeter;
         this.glyphs = new ArrayList<>(glyphs);
@@ -43,26 +46,22 @@ public class Test {
     }
 
     private void classifierFit() {
-        List<double[]> glyphVectors = new ArrayList<>(glyphs.size());
+        List<List<Double>> glyphVectors = new ArrayList<>(glyphs.size());
         List<Integer> glyphClasses = new ArrayList<>(glyphs.size());
-
         for (Glyph g : glyphs) {
-            glyphVectors.add(g.getFeatureVector());
-            glyphClasses.add(Character.getNumericValue(g.getGlyphCharacter()));
+            glyphVectors.add(new ArrayList<>(Arrays.stream(g.getFeatureVector()).boxed().collect(Collectors.toList())));
+            glyphClasses.add((int) g.getCharacter());
         }
-
         classifier.fit(glyphVectors, glyphClasses, distanceMeter);
     }
 
     public char classify(double[] vector) {
         classifierFit();
         List<Double> listVector = new ArrayList<>();
-
         for (double d : vector) {
             listVector.add(d);
         }
-
-        return (char)(classifier.predict(listVector).intValue());
-
+        return (char) (classifier.predict(listVector));
     }
+
 }

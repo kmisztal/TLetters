@@ -1,10 +1,12 @@
-package tletters.glyphextracter;
+package tletters.glyphextraction;
+
+import tletters.image.ImageUtils;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GlyphExtracter {
+public class GlyphExtractor {
 
     public List<BufferedImage> letters;
 
@@ -27,7 +29,7 @@ public class GlyphExtracter {
         boolean add = false;
         for (int y = 0; y < image.getHeight(); y++) {
             for (int x = 0; x < image.getWidth(); x++) {
-                if (existBlackPixel(image, x, y)) {
+                if (ImageUtils.isBlack(image, x, y)) {
                     if (y == image.getHeight() - 1) {
                         add = true;
                     }
@@ -54,7 +56,7 @@ public class GlyphExtracter {
             add = false;
             for (int x = 0; x < lines.get(i).getWidth(); x++) {
                 for (int y = 0; y < lines.get(i).getHeight(); y++) {
-                    if (existBlackPixel(lines.get(i), x, y)) {
+                    if (ImageUtils.isBlack(lines.get(i), x, y)) {
                         if (x == lines.get(i).getWidth() - 1) {
                             add = true;
                         }
@@ -72,12 +74,6 @@ public class GlyphExtracter {
                 letters.add(lines.get(i).getSubimage(point, 0, lines.get(i).getWidth() - point, lines.get(i).getHeight()));
             }
         }
-
-    }
-
-    private boolean existBlackPixel(BufferedImage image, int x, int y) {
-        //If pixel have a black color
-        return image.getRGB(x, y) <= -16350000 && image.getRGB(x, y) > -17000000;
     }
 
 }

@@ -1,36 +1,22 @@
 package tletters.imagegeneration;
 
+import tletters.image.ImageUtils;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 public class ImageGenerator {
 
     private BufferedImage image;
-
-    public static final Map<RenderingHints.Key, Object> RENDERING_PROPERTIES = new HashMap<>();
-
-    static {
-        RENDERING_PROPERTIES.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-        RENDERING_PROPERTIES.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        RENDERING_PROPERTIES.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-        RENDERING_PROPERTIES.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
-        RENDERING_PROPERTIES.put(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-        RENDERING_PROPERTIES.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        RENDERING_PROPERTIES.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        RENDERING_PROPERTIES.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-    }
 
     public void generateImage(Font font, float fontSize, String text, float noisePercentage) {
         font = font.deriveFont(fontSize);
@@ -43,7 +29,7 @@ public class ImageGenerator {
         g2d.dispose();
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         g2d = image.createGraphics();
-        g2d.setRenderingHints(RENDERING_PROPERTIES);
+        g2d.setRenderingHints(ImageUtils.RENDERING_PROPERTIES);
         g2d.setFont(font);
         g2d.setColor(Color.BLACK);
         g2d.setBackground(Color.WHITE);
@@ -67,19 +53,19 @@ public class ImageGenerator {
 
     private void cropImage() {
         int top = 0;
-        while (!checkHorizontalLine(top)) {
+        while (top < image.getHeight() - 1 && !checkHorizontalLine(top)) {
             top++;
         }
         int left = 0;
-        while (!checkVerticalLine(left)) {
+        while (left < image.getWidth() - 1 && !checkVerticalLine(left)) {
             left++;
         }
         int bottom = image.getHeight() - 1;
-        while (!checkHorizontalLine(bottom)) {
+        while (bottom > top && !checkHorizontalLine(bottom)) {
             bottom--;
         }
         int right = image.getWidth() - 1;
-        while (!checkVerticalLine(right)) {
+        while (right > left && !checkVerticalLine(right)) {
             right--;
         }
         image = image.getSubimage(left, top, right - left + 1, bottom - top + 1);
@@ -88,7 +74,7 @@ public class ImageGenerator {
     private boolean checkHorizontalLine(int line) {
         int width = image.getWidth();
         for (int i = 0; i < width; i++) {
-            if (image.getRGB(i, line) <= -16350000 && image.getRGB(i, line) > -17000000) {
+            if (ImageUtils.isBlack(image, i, line)) {
                 return true;
             }
         }
@@ -98,7 +84,7 @@ public class ImageGenerator {
     private boolean checkVerticalLine(int line) {
         int height = image.getHeight();
         for (int i = 0; i < height; i++) {
-            if (image.getRGB(line, i) <= -16350000 && image.getRGB(line, i) > -17000000) {
+            if (ImageUtils.isBlack(image, line, i)) {
                 return true;
             }
         }

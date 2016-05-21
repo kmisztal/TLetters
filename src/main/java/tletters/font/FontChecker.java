@@ -15,7 +15,8 @@ import java.nio.file.StandardCopyOption;
  */
 public class FontChecker {
 
-    public static final char[] SPECIAL_CHARS = {'ą', 'Ą', 'ć', 'Ć', 'ę', 'Ę', 'ł', 'Ł', 'ń', 'Ń', 'ó', 'Ó', 'ś', 'Ś', 'ź', 'Ź', 'ż', 'Ż'};
+    public static final char[] SPECIAL_CHARS = {'\u0261', '\u0260', '\u0263', '\u0262', '\u0281', '\u0280', '\u0322',
+            '\u0321', '\u0324', '\u0323', '\u0243', '\u0211', '\u0347', '\u0346', '\u0378', '\u0377', '\u0380', '\u0379'};
 
     public static boolean checkFont(String name) throws IOException, FontFormatException {
         Font font = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("src/main/resources/fonts/" + name));

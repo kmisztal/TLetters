@@ -1,7 +1,11 @@
 package tletters.featureextraction;
 
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.Properties;
 
 public class FeaturesExtractor {

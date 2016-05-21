@@ -16,10 +16,10 @@ public class Glyph {
         DIGIT, LETTER
     }
 
-    public Glyph(double[] featureVector, GlyphCase glyphCase, GlyphType glyphType, LanguageType glyphLanguage, char character) {
+    public Glyph(double[] featureVector, LanguageType glyphLanguage, char character) {
         this.featureVector = featureVector;
-        this.glyphCase = glyphCase;
-        this.glyphType = glyphType;
+        this.glyphCase = Character.isUpperCase(character) ? GlyphCase.UPPER : GlyphCase.LOWER;
+        this.glyphType = Character.isAlphabetic(character) ? GlyphType.LETTER : GlyphType.DIGIT;
         this.glyphLanguage = glyphLanguage;
         this.character = character;
         this.validateGlyph();
@@ -45,9 +45,9 @@ public class Glyph {
 
     private boolean isCharacterCaseAndGlyphCaseMatching() {
         if (this.glyphCase == GlyphCase.UPPER) {
-            return Character.isUpperCase(this.character) || Character.isDigit(this.character);
+            return Character.isUpperCase(this.character);
         } else if (this.glyphCase == GlyphCase.LOWER) {
-            return Character.isLowerCase(this.character);
+            return Character.isLowerCase(this.character) || Character.isDigit(this.character);
         }
         throw new IllegalArgumentException("Invalid glyph case");
     }
@@ -84,6 +84,10 @@ public class Glyph {
 
     public void setGlyphLanguage(LanguageType glyphLanguage) {
         this.glyphLanguage = glyphLanguage;
+    }
+
+    public char getCharacter() {
+        return character;
     }
 
 }

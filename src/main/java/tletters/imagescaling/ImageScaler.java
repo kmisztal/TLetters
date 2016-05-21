@@ -1,18 +1,17 @@
-package tletters.imagescaler;
+package tletters.imagescaling;
 
+import tletters.image.ImageUtils;
+
+import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
-import java.awt.RenderingHints;
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,22 +19,9 @@ import java.util.regex.Pattern;
 
 public class ImageScaler {
 
-    public static final Map<RenderingHints.Key, Object> RENDERING_PROPERTIES = new HashMap<>();
-
-    static {
-        RENDERING_PROPERTIES.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-        RENDERING_PROPERTIES.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        RENDERING_PROPERTIES.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-        RENDERING_PROPERTIES.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
-        RENDERING_PROPERTIES.put(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-        RENDERING_PROPERTIES.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        RENDERING_PROPERTIES.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        RENDERING_PROPERTIES.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-    }
-
     private boolean checkHorizontalLine(BufferedImage image, int line, int width) {
         for (int i = 0; i < width; i++) {
-            if (image.getRGB(i, line) <= -16350000 && image.getRGB(i, line) > -17000000) {
+            if (ImageUtils.isBlack(image, i, line)) {
                 return true;
             }
         }
@@ -44,7 +30,7 @@ public class ImageScaler {
 
     private boolean checkVerticalLine(BufferedImage image, int line, int height) {
         for (int i = 0; i < height; i++) {
-            if (image.getRGB(line, i) <= -16350000 && image.getRGB(line, i) > -17000000) {
+            if (ImageUtils.isBlack(image, line, i)) {
                 return true;
             }
         }
@@ -56,42 +42,46 @@ public class ImageScaler {
         int left = 0, top = 0;
         int right = width - 1;
         int bottom = height - 1;
-        while (!checkHorizontalLine(image, top, width)) {
+        while (top < height - 1 && !checkHorizontalLine(image, top, width)) {
             top++;
         }
-        while (!checkVerticalLine(image, left, height)) {
+        while (left < width - 1 && !checkVerticalLine(image, left, height)) {
             left++;
         }
-        while (!checkHorizontalLine(image, bottom, width)) {
+        while (bottom > top && !checkHorizontalLine(image, bottom, width)) {
             bottom--;
         }
-        while (!checkVerticalLine(image, right, height)) {
+        while (right > left && !checkVerticalLine(image, right, height)) {
             right--;
         }
         return image.getSubimage(left, top, right - left + 1, bottom - top + 1);
+    }
+
+    private BufferedImage getScalImage(BufferedImage image) {
+        BufferedImage imageAfterScal = new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphicAfterScal = imageAfterScal.createGraphics();
+        try {
+            graphicAfterScal.setRenderingHints(ImageUtils.RENDERING_PROPERTIES);
+            graphicAfterScal.drawImage(image, 0, 0, 64, 64, null);
+        } finally {
+            graphicAfterScal.dispose();
+        }
+        return imageAfterScal;
     }
 
     private void saveScalImage(BufferedImage image, String unicode) {
         char unicodeChar = unicode.charAt(0);
         String hex = String.format("%04x", (int) unicodeChar);
         File outputfile = new File(hex + ".png");
-        BufferedImage imageAfterScal = new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D graphicAfterScal = imageAfterScal.createGraphics();
         try {
-            graphicAfterScal.setRenderingHints(RENDERING_PROPERTIES);
-            graphicAfterScal.drawImage(image, 0, 0, 64, 64, null);
-        } finally {
-            graphicAfterScal.dispose();
-        }
-        try {
-            ImageIO.write(imageAfterScal, "png", outputfile);
+            ImageIO.write(getScalImage(image), "png", outputfile);
         } catch (IOException ex) {
             Logger.getLogger(ImageScaler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     public void scalImage(String unicode, String fontName) {
-        if (Objects.equals("", unicode) || Objects.equals("", fontName)) {
+        if (unicode == null || unicode.equals("") || fontName == null || fontName.equals("")) {
             throw new IllegalArgumentException("Unicode and fontName can not be empty or null!");
         }
         BufferedImage imageBeforeScal = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
@@ -117,7 +107,7 @@ public class ImageScaler {
         graphic.dispose();
         imageBeforeScal = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         graphic = imageBeforeScal.createGraphics();
-        graphic.setRenderingHints(RENDERING_PROPERTIES);
+        graphic.setRenderingHints(ImageUtils.RENDERING_PROPERTIES);
         graphic.setColor(Color.BLACK);
         graphic.setFont(font);
         int x = 0;
@@ -131,7 +121,7 @@ public class ImageScaler {
     }
 
     public void scalImage(String unicode, BufferedImage image) {
-        if (Objects.equals("", unicode) || image == null) {
+        if (unicode == null || unicode.equals("") || image == null) {
             throw new IllegalArgumentException("Unicode and image can not be empty or null!");
         }
         image = cutImage(image);
@@ -143,7 +133,7 @@ public class ImageScaler {
             throw new IllegalArgumentException("Image can not be null!");
         }
         image = cutImage(image);
-        return image;
+        return getScalImage(image);
     }
 
 }
