@@ -7,11 +7,12 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
- *
  * @author arek
  */
 public class ImageScalerTest {
@@ -19,7 +20,7 @@ public class ImageScalerTest {
     /**
      * Test for null parameters of scalImage method, of class ImageScaler.
      */
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testScalImage_StringNull_StringNull() {
         System.out.println("scalImage(null, null)");
         String unicode = null;
@@ -85,6 +86,7 @@ public class ImageScalerTest {
     /**
      * Additional method for comparing two BufferedImages.
      * It compares the image dimensions first, and then iterates over each pixel to
+     *
      * @param imgA
      * @param imgB
      * @return true if images are equal, false otherwise
@@ -123,8 +125,8 @@ public class ImageScalerTest {
     public void testCutImage_AllWhite() {
         System.out.println("cutImage(BufferedImage allWhite)");
         BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_4BYTE_ABGR);
-        for(int x=0; x<100; x++)
-            for(int y=0; y<100; y++)
+        for (int x = 0; x < 100; x++)
+            for (int y = 0; y < 100; y++)
                 image.setRGB(x, y, Color.WHITE.getRGB());
         ImageScaler instance = new ImageScaler();
         instance.scalImage("\u0002", image);
@@ -138,8 +140,8 @@ public class ImageScalerTest {
     public void testCutImage_AllBlack() {
         System.out.println("cutImage(BufferedImage allBlack)");
         BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_4BYTE_ABGR);
-        for(int x=0; x<100; x++)
-            for(int y=0; y<100; y++)
+        for (int x = 0; x < 100; x++)
+            for (int y = 0; y < 100; y++)
                 image.setRGB(x, y, Color.BLACK.getRGB());
         ImageScaler instance = new ImageScaler();
         instance.scalImage("\u0003", image);
