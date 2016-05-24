@@ -27,7 +27,12 @@ W folderze z danymi przechowujemy:
 
 ### Run Main class
 ```shell
-gradle run
+gradle :run
+```
+
+### Run GUI
+```
+gradle gui:run
 ```
 
 ### Run tests

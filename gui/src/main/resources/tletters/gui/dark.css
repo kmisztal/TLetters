@@ -1,0 +1,7 @@
+.root {
+    background: #212121;
+    ripple: rgba(255, 255, 255, .125);
+    button: #5a595b;
+
+    primary_text_default: rgba(255, 255, 255, .87);
+}

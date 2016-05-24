@@ -1,0 +1,19 @@
+.root {
+    -fx-background-color: background;
+}
+
+.button, .label {
+    -fx-text-fill: primary_text_default;
+}
+
+.button {
+    -fx-background-color: button;
+}
+
+.button:pressed {
+    -fx-background-color: ripple;
+}
+
+#title {
+    -fx-font-size: 24px;
+}

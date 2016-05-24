@@ -1,0 +1,52 @@
+<?import javafx.geometry.Insets?><?import javafx.scene.control.*?><?import javafx.scene.layout.*?>
+<GridPane xmlns:fx="http://javafx.com/fxml"
+    alignment="CENTER"
+    hgap="8"
+    vgap="8"
+    fx:controller="tletters.gui.App">
+
+    <padding>
+        <Insets bottom="16"
+            left="16"
+            right="16"
+            top="16" />
+    </padding>
+
+    <Label GridPane.columnIndex="0"
+        GridPane.columnSpan="2"
+        GridPane.rowIndex="0"
+        id="title"
+        text="TLetters" />
+
+    <TextField GridPane.columnIndex="0"
+        GridPane.columnSpan="2"
+        GridPane.fillWidth="true"
+        GridPane.rowIndex="1"
+        minWidth="400"
+        text="Enter some text here."
+        fx:id="textField" />
+
+    <Label GridPane.columnIndex="0"
+        GridPane.rowIndex="2"
+        fx:id="fontLabel" />
+
+    <Button GridPane.columnIndex="1"
+        GridPane.halignment="RIGHT"
+        GridPane.rowIndex="2"
+        onAction="#handleChooseFontAction"
+        text="Choose font.." />
+
+    <Label GridPane.columnIndex="0"
+        GridPane.columnSpan="2"
+        GridPane.fillWidth="true"
+        GridPane.rowIndex="3"
+        text="Click Process button to see an output here."
+        fx:id="outputLabel" />
+
+    <Button GridPane.columnIndex="1"
+        GridPane.halignment="RIGHT"
+        GridPane.rowIndex="3"
+        onAction="#handleProcessAction"
+        text="Process" />
+
+</GridPane>
