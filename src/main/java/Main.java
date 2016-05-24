@@ -8,7 +8,7 @@ import tletters.imagescaling.ImageScaler;
 import tletters.knnclassification.EuclideanDistanceMeter;
 import tletters.knnclassification.KNNClassifier;
 
-import java.awt.*;
+import java.awt.Font;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,7 +31,6 @@ public class Main {
                 .map(imageScaler::scalImage)
                 .map(image -> new Glyph(zoning.extractFeatures(image), LanguageType.GENERAL_PL, letters.charAt(i[0]++)))
                 .collect(Collectors.toList());
-
         GlyphClassifier glyphClassifier = new GlyphClassifier(new KNNClassifier<Double>(2), new EuclideanDistanceMeter<Double>(), glyphList);
         String text = "Krzysztof Misztal";
         imageGenerator.generateImage(font, 24, text, 0);

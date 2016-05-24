@@ -33,7 +33,6 @@ public class ImageGeneratorTest {
         expectedEx.expect(IllegalArgumentException.class);
         ImageGenerator generator = new ImageGenerator();
         generator.saveGeneratedImage();
-        assertTrue(new File("Text.png").exists());
     }
 
     @Test
