@@ -10,13 +10,12 @@ public class ZernikeMoments implements ExtractionAlgorithm {
     public ZernikeMoments(){}
 
     private int imsize;
-    private static int order = 12;  //for order<13 works well, but for larger odrder there are numerical errors
+    private static int ORDER = 12;  //for order<13 works well, but for larger odrder there are numerical errors
 
     public double[] extractFeatures(BufferedImage bufferedImage) {
 
         if(bufferedImage == null){
-            System.out.println("There is no image!");
-            return null;
+            throw new IllegalArgumentException("Image cannot be null");
         }
 
         if(bufferedImage.getHeight() != bufferedImage.getWidth()){
@@ -41,8 +40,8 @@ public class ZernikeMoments implements ExtractionAlgorithm {
             }
         }
 
-        MyZernike zs1=zernike_bf(imsize,order); //computing Zernike base functions
-        Complex[] v1=zernike_mom(pixels,zs1);   //computing Zernike moments
+        MyZernike zs1=zernikeBf(imsize); //computing Zernike base functions
+        Complex[] v1=zernikeMom(pixels,zs1);   //computing Zernike moments
 
         double[] v1ABS = new double[v1.length]; //getting abs from complex moments
         for(int i=0; i<v1.length; i++)
@@ -52,10 +51,10 @@ public class ZernikeMoments implements ExtractionAlgorithm {
     }
 
 
-    private MyZernike zernike_bf(int SZ, int ORDER){
+    private MyZernike zernikeBf(int SZ){
         int[] F=factorial(ORDER);
 
-        ArrayList<int[]> pq=zernike_orderlist(ORDER);
+        ArrayList<int[]> pq=zernikeOrderlist(ORDER);
         int len = pq.size();
         double szh=SZ/2;
 
@@ -78,8 +77,8 @@ public class ZernikeMoments implements ExtractionAlgorithm {
             pqind[src.get(i)[0]-1][src.get(i)[1]-1] = i;
         }
 
-        int[][][] Rmns=new int[1+2*ORDER+1][1+2*ORDER+1][1+2*ORDER+1];
-        for(int[][] temp1: Rmns)
+        int[][][] rmns=new int[1+2*ORDER+1][1+2*ORDER+1][1+2*ORDER+1];
+        for(int[][] temp1: rmns)
             for(int[] temp2: temp1)
                 Arrays.fill(temp2, 0);
 
@@ -90,7 +89,7 @@ public class ZernikeMoments implements ExtractionAlgorithm {
             int mpnh=(int)Math.floor((m+Math.abs(n))/2);
             int mmnh=(int)Math.floor((m-Math.abs(n))/2);
             for(int s=0; s<=mmnh; s++){
-                Rmns[ORDER+m][ORDER+n][s]=(((int)Math.pow(-1, s))*F[m-s])/(F[s]*F[mpnh-s]*F[mmnh-s]);
+                rmns[ORDER+m][ORDER+n][s]=(((int)Math.pow(-1, s))*F[m-s])/(F[s]*F[mpnh-s]*F[mmnh-s]);
             }
         }
 
@@ -118,17 +117,17 @@ public class ZernikeMoments implements ExtractionAlgorithm {
                     double R = 0;
 
                     for(int s = 0; s<=((m-Math.abs(n))/2); s++) {
-                        R = R + Rmns[ORDER + m][ORDER + n][s] * (Math.pow(rho, (m - 2 * s)));
+                        R = R + rmns[ORDER + m][ORDER + n][s] * (Math.pow(rho, (m - 2 * s)));
 
                     }
-                    ZBF[y-1][x-1][flat] = multyply(new Complex(R,0) , exp(new Complex(0, n * theta)) );
+                    ZBF[y-1][x-1][flat] = multiply(new Complex(R,0) , exp(new Complex(0, n * theta)) );
                 }
             }
         }
         return new MyZernike(ORDER, pq, pqind, ZBF);
     }
 
-    public Complex multyply(Complex a, Complex b) {
+    public Complex multiply(Complex a, Complex b) {
         return new Complex(a.getReal()*b.getReal() - a.getImaginary()*b.getImaginary(),
                 a.getReal()*b.getImaginary() + a.getImaginary()*b.getReal());
     }
@@ -138,7 +137,7 @@ public class ZernikeMoments implements ExtractionAlgorithm {
     }
 
 
-    private Complex[] zernike_mom(int[][] I, MyZernike ZBFSTR){
+    private Complex[] zernikeMom(int[][] I, MyZernike ZBFSTR){
         Complex[][][] bf = ZBFSTR.bf;
         ArrayList<int[]> pq=ZBFSTR.orders;
         int[][] id = ZBFSTR.index;
@@ -154,11 +153,11 @@ public class ZernikeMoments implements ExtractionAlgorithm {
             Complex temp = new Complex(0,0);
             for(int x=0; x<I[0].length; x++){
                 for(int y=0; y<I[0].length; y++){
-                    temp = temp.add(multyply(new Complex(I[x][y],0) , bf[x][y][flat].conjugate()));
+                    temp = temp.add(multiply(new Complex(I[x][y],0) , bf[x][y][flat].conjugate()));
                 }
             }
 
-            Z[flat] = multyply(Z[flat],temp);
+            Z[flat] = multiply(Z[flat],temp);
         }
         return Z;
     }
@@ -186,7 +185,7 @@ public class ZernikeMoments implements ExtractionAlgorithm {
         return output;
     }
 
-    private ArrayList<int[]> zernike_orderlist(int order){
+    private ArrayList<int[]> zernikeOrderlist(int order){
         ArrayList<int[]> PQ = new ArrayList<int[]>();
         for(int p=0; p<=order; p++){
             for(int q=0; q<=p; q++){
