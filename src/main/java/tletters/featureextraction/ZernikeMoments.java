@@ -9,10 +9,13 @@ public class ZernikeMoments implements ExtractionAlgorithm {
 
     public ZernikeMoments(){}
 
-    private int imsize;
-    private static int ORDER = 12;  //for order<13 works well, but for larger odrder there are numerical errors
+    private static final int ORDER = 12;  //for order<13 works well, but for larger odrder there are numerical errors
+    private MyZernike zs1;
+    private int imsize=0;
 
     public double[] extractFeatures(BufferedImage bufferedImage) {
+
+        int tempImsize = -1;
 
         if(bufferedImage == null){
             throw new IllegalArgumentException("Image cannot be null");
@@ -21,16 +24,16 @@ public class ZernikeMoments implements ExtractionAlgorithm {
         if(bufferedImage.getHeight() != bufferedImage.getWidth()){
             System.out.println("the image is not square, it will be cropped!");
             if(bufferedImage.getHeight() < bufferedImage.getWidth()){
-                imsize=bufferedImage.getHeight();
+                tempImsize =bufferedImage.getHeight();
             }else{
-                imsize=bufferedImage.getWidth();
+                tempImsize =bufferedImage.getWidth();
             }
         }else{
-            imsize=bufferedImage.getHeight();
+            tempImsize =bufferedImage.getHeight();
         }
-        int[][] pixels = new int[imsize][imsize]; //cutting and prepearing image
-        for( int i = 0; i < imsize; i++ ){
-            for( int j = 0; j < imsize; j++ ) {
+        int[][] pixels = new int[tempImsize][tempImsize]; //cutting and prepearing image
+        for(int i = 0; i < tempImsize; i++ ){
+            for(int j = 0; j < tempImsize; j++ ) {
                 int temp = bufferedImage.getRGB(i, j);
                 if (temp == -1) {
                     pixels[j][i] = 1;
@@ -39,8 +42,10 @@ public class ZernikeMoments implements ExtractionAlgorithm {
                 }
             }
         }
-
-        MyZernike zs1=zernikeBf(imsize); //computing Zernike base functions
+        if(tempImsize != imsize) {  //if the image size is the same, we don't need to recompute base functions
+            imsize  = tempImsize;
+            zs1 = zernikeBf(); //computing Zernike base functions
+        }
         Complex[] v1=zernikeMom(pixels,zs1);   //computing Zernike moments
 
         double[] v1ABS = new double[v1.length]; //getting abs from complex moments
@@ -51,12 +56,12 @@ public class ZernikeMoments implements ExtractionAlgorithm {
     }
 
 
-    private MyZernike zernikeBf(int SZ){
+    private MyZernike zernikeBf(){
         int[] F=factorial(ORDER);
 
         ArrayList<int[]> pq=zernikeOrderlist(ORDER);
         int len = pq.size();
-        double szh=SZ/2;
+        double szh= imsize /2;
 
         int[][] pqind = new int[2*ORDER+1][2*ORDER+1];
         for(int[] row: pqind)
@@ -95,14 +100,14 @@ public class ZernikeMoments implements ExtractionAlgorithm {
 
         double rho, theta;
 
-        Complex[][][] ZBF=new Complex[SZ][SZ][len];
-        for(int i=0; i<SZ; i++)
-            for(int j=0; j<SZ; j++)
+        Complex[][][] ZBF=new Complex[imsize][imsize][len];
+        for(int i = 0; i< imsize; i++)
+            for(int j = 0; j< imsize; j++)
                 for(int k=0; k<len; k++)
                     ZBF[i][j][k] = new Complex(0,0);
 
-        for(int y=1; y<=SZ; y++){
-            for(int x=1; x<=SZ; x++){
+        for(int y = 1; y<= imsize; y++){
+            for(int x = 1; x<= imsize; x++){
                 rho=Math.sqrt(Math.pow(szh-x, 2)+Math.pow(szh-y, 2));
                 theta=Math.atan2(szh-y,szh-x);
 
