@@ -22,7 +22,7 @@ public class GlyphExtractor {
 
     public List<BufferedImage> scalpel() {
         cutLineWithText();
-        updateLinesWithAverageHeight();
+        joinLinesWithAverageHeight();
         cutLettersWithLines();
         return letters;
     }
@@ -52,7 +52,7 @@ public class GlyphExtractor {
         }
     }
 
-    private void updateLinesWithAverageHeight() {
+    private void joinLinesWithAverageHeight() {
         OptionalDouble average = lines.stream().mapToDouble(BufferedImage::getHeight).average();
         joinLinesWhenNeeded(average.getAsDouble());
     }
