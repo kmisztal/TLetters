@@ -10,10 +10,10 @@ import java.util.OptionalDouble;
 
 public class GlyphExtractor {
 
-    public List<BufferedImage> letters;
+    private List<BufferedImage> letters;
 
     private BufferedImage image;
-    public List<BufferedImage> lines;
+    private List<BufferedImage> lines;
     private List<BufferedImage> joinedLines;
 
     public void setImage(BufferedImage image) {
