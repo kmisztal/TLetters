@@ -94,27 +94,27 @@ public class GlyphExtractor {
     private void cutLettersWithLines() {
         letters = new ArrayList<>();
         boolean add;
-        for (int i = 0; i < joinedLines.size(); i++) {
+        for (BufferedImage line : joinedLines) {
             int point = 0;
             add = false;
-            for (int x = 0; x < joinedLines.get(i).getWidth(); x++) {
-                for (int y = 0; y < joinedLines.get(i).getHeight(); y++) {
-                    if (ImageUtils.isBlack(joinedLines.get(i), x, y)) {
-                        if (x == joinedLines.get(i).getWidth() - 1) {
+            for (int x = 0; x < line.getWidth(); x++) {
+                for (int y = 0; y < line.getHeight(); y++) {
+                    if (ImageUtils.isBlack(line, x, y)) {
+                        if (x == line.getWidth() - 1) {
                             add = true;
                         }
                         break;
                     }
-                    if (x != 0 && joinedLines.get(i).getHeight() - 1 == y) {
+                    if (x != 0 && line.getHeight() - 1 == y) {
                         if (x - point > 1) {
-                            letters.add(joinedLines.get(i).getSubimage(point, 0, x - point + 1, joinedLines.get(i).getHeight()));
+                            letters.add(line.getSubimage(point, 0, x - point + 1, line.getHeight()));
                         }
                         point = x;
                     }
                 }
             }
             if (add) {
-                letters.add(joinedLines.get(i).getSubimage(point, 0, joinedLines.get(i).getWidth() - point, joinedLines.get(i).getHeight()));
+                letters.add(line.getSubimage(point, 0, line.getWidth() - point, line.getHeight()));
             }
         }
     }
