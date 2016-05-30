@@ -73,9 +73,9 @@ public class AlgorithmComparator {
      */
     public Map<String, RecognitionTestResult> compareRecognitionUsingOneClassifier(Classifier classifier) {
         List<String> testData = generateTestTexts();
-        /*uncomment to see test data
-        System.out.println(Arrays.toString(testData.toArray()));
-        */
+        /*uncomment to see test data*/
+//        System.out.println(Arrays.toString(testData.toArray()));
+
         Map<String, RecognitionTestResult> results = new HashMap<>();
         for (Map.Entry<String, ExtractionAlgorithm> algorithmEntry : algorithmMap.entrySet()) {
             Long startTime = System.currentTimeMillis();
@@ -84,6 +84,8 @@ public class AlgorithmComparator {
                 for (String text : testData) {
                     String resultText = recognize(algorithmEntry.getValue(), classifier, font, text, 24);
                     if (resultText.equals(text)) successes++;
+                    /*uncomment to see invidual compare results*/
+//                    System.out.println(resultText+"=="+text);
                 }
             }
             Float successRate = (float) successes / (testData.size() * fonts.size());
