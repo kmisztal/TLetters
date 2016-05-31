@@ -27,6 +27,9 @@ repositories {
 
 // In this section you declare the dependencies for your production and glyphclassification code
 dependencies {
+    // The production code uses the SqLite at compile time
+    compile 'org.xerial:sqlite-jdbc:3.8.11.2'
+
     // The production code uses the SLF4J logging API at compile time
     compile 'org.slf4j:slf4j-api:1.7.18'
 
