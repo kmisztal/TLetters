@@ -8,6 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class uses SQLite JDBC 3.8.11.2 driver developed by Taro L. Saito
@@ -36,15 +38,14 @@ public class SqlExtractor extends Extractor {
     private void init(String driver, String dbPath) {
         try {
             Class.forName(driver);
-        } catch (ClassNotFoundException eString) {
-            System.err.println("Could not init JDBC driver - driver not found");
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(SqlExtractor.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
             conn = DriverManager.getConnection(DEFAULT_URL + dbPath + DEFAULT_DB_EXTENSION);
             stat = conn.createStatement();
-        } catch (SQLException e) {
-            System.err.println("Could not create Sql connection");
-            e.printStackTrace();
+        } catch (SQLException ex) {
+            Logger.getLogger(SqlExtractor.class.getName()).log(Level.SEVERE, null, ex);
         }
         createTable();
     }
@@ -52,8 +53,8 @@ public class SqlExtractor extends Extractor {
     public void closeConnection() {
         try {
             conn.close();
-        } catch (SQLException e) {
-            System.err.println("Could not close connection");
+        } catch (SQLException ex) {
+            Logger.getLogger(SqlExtractor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -62,8 +63,8 @@ public class SqlExtractor extends Extractor {
                 " (id INTEGER PRIMARY KEY AUTOINCREMENT, name varchar(255), features varchar(255))";
         try {
             stat.execute(query);
-        } catch (SQLException e) {
-            System.err.println("Could not create table");
+        } catch (SQLException ex) {
+            Logger.getLogger(SqlExtractor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -78,8 +79,8 @@ public class SqlExtractor extends Extractor {
                 features = result.getString("features");
                 properties.put(name, features);
             }
-        } catch (SQLException e) {
-            System.err.println("Could not retrieve data from table");
+        } catch (SQLException ex) {
+            Logger.getLogger(SqlExtractor.class.getName()).log(Level.SEVERE, null, ex);
         }
         return properties;
     }
@@ -92,8 +93,9 @@ public class SqlExtractor extends Extractor {
             prepStmt.setString(1, featureName);
             prepStmt.setString(2, Arrays.toString(features).replace('[', ' ').replace(']', ' ').replace(',', ' ').trim());
             prepStmt.execute();
-        } catch (SQLException e) {
-            System.err.println("Could not insert data into table");
+        } catch (SQLException ex) {
+            Logger.getLogger(SqlExtractor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
 }

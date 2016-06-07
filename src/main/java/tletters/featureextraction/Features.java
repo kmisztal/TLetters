@@ -44,6 +44,7 @@ public class Features {
     @Override
     public String toString() {
         return "[" + id + "] [" + name + "] [" +
-                Arrays.toString(features).replace('[', ' ').replace(']', ' ').replace(',', ' ').trim() +"]";
+                Arrays.toString(features).replace('[', ' ').replace(']', ' ').replace(',', ' ').trim() + "]";
     }
+
 }

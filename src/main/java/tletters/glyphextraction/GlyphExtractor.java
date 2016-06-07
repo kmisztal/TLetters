@@ -76,7 +76,6 @@ public class GlyphExtractor {
     private BufferedImage joinLines(BufferedImage thisLine, BufferedImage nextLine) {
         BufferedImage joinedLine = new BufferedImage(thisLine.getWidth() + nextLine.getWidth(),
                 thisLine.getHeight() + nextLine.getHeight(), thisLine.getType());
-
         Graphics joinedLinesGraphics = joinedLine.getGraphics();
         joinedLinesGraphics.drawImage(thisLine, 0, 0, null);
         joinedLinesGraphics.drawImage(nextLine, 0, thisLine.getHeight(), null);

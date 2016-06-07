@@ -19,4 +19,5 @@ public abstract class Extractor {
     abstract Properties load();
 
     abstract void save(String featureName, double[] features);
+
 }

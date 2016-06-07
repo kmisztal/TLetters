@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PropertiesExtractor extends Extractor {
 
@@ -26,10 +28,10 @@ public class PropertiesExtractor extends Extractor {
     public Properties load() {
         try (FileInputStream in = new FileInputStream(path)) {
             properties.load(in);
-        } catch (FileNotFoundException e) {
-            System.err.println("Could not load features vector from " + path + " File not found");
-        } catch (IOException e) {
-            System.err.println("Could not load features vector from " + path);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(PropertiesExtractor.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(PropertiesExtractor.class.getName()).log(Level.SEVERE, null, ex);
         }
         return properties;
     }
@@ -39,10 +41,11 @@ public class PropertiesExtractor extends Extractor {
         properties.put(featureName, features);
         try (FileOutputStream out = new FileOutputStream(path)) {
             properties.store(out, null);
-        } catch (FileNotFoundException e) {
-            System.err.println("Could not save features vector into " + path + " File not found");
-        } catch (IOException e) {
-            System.err.println("Could not save features vector into " + path);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(PropertiesExtractor.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(PropertiesExtractor.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
 }

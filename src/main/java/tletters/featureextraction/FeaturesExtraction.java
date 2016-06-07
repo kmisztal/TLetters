@@ -22,4 +22,5 @@ public class FeaturesExtraction {
         Optional<Properties> features = Optional.ofNullable(extractor.load());
         return features;
     }
+
 }
