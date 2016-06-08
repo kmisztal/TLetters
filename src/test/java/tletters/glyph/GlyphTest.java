@@ -4,6 +4,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import static org.junit.Assert.assertTrue;
+
 public class GlyphTest {
 
     @Rule
@@ -46,8 +51,58 @@ public class GlyphTest {
 
     @Test
     public void testCanBeConstructedWithoutExceptionsForLowercaseDigit() {
-        expectedEx.expect(IllegalArgumentException.class);
         new Glyph(new double[0], LanguageType.GENERAL_PL, '9').setGlyphCase(Glyph.GlyphCase.LOWER);
+    }
+
+    @Test
+    public void testWillReturnTrueWhenCheckingGlyphTypeAndCharacterTypeForNewGlyphObject() {
+
+        try{
+            Method testedMethod = Glyph.class.getDeclaredMethod("isCharacterTypeAndGlyphTypeMatching");
+            testedMethod.setAccessible(true);
+            Glyph g = new Glyph(new double[0], LanguageType.GENERAL_PL, '9');
+            testedMethod.invoke(g);
+            Boolean b;
+            b = (Boolean)testedMethod.invoke(g);
+            assertTrue(b);
+
+        }catch(NoSuchMethodException e){
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testWillReturnTrueWhenCheckingGlyphCaseAndCharacterCaseForNewGlyphObject() {
+
+        try{
+            Method testedMethod = Glyph.class.getDeclaredMethod("isCharacterCaseAndGlyphCaseMatching");
+            testedMethod.setAccessible(true);
+            Glyph g = new Glyph(new double[0], LanguageType.GENERAL_PL, 'q');
+            testedMethod.invoke(g);
+            Boolean b;
+            b = (Boolean)testedMethod.invoke(g);
+            assertTrue(b);
+
+        }catch(NoSuchMethodException e){
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testWillThrowExceptionWhenCharacterIsNotLetterNorDigit() {
+
+        expectedEx.expect(IllegalArgumentException.class);
+        expectedEx.expectMessage("Character type and glyphType do not match");
+        new Glyph(new double[0], LanguageType.GENERAL_PL, '~');
+
     }
 
 }
