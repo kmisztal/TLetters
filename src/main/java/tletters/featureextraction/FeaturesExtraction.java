@@ -1,8 +1,10 @@
 package tletters.featureextraction;
 
+import tletters.glyph.Glyph;
+
 import java.awt.image.BufferedImage;
+import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 
 public class FeaturesExtraction {
 
@@ -18,8 +20,8 @@ public class FeaturesExtraction {
         extractor.extract(algorithm, image, featureName);
     }
 
-    public Optional<Properties> loadExtracted() {
-        Optional<Properties> features = Optional.ofNullable(extractor.load());
+    public Optional<List<Glyph>> loadExtracted() {
+        Optional<List<Glyph>> features = Optional.ofNullable(extractor.load());
         return features;
     }
 

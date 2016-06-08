@@ -68,8 +68,8 @@ public class ImageUtils {
     }
 
     public static boolean isBlack(BufferedImage image, int i, int j) {
-        return image.getRGB(i, j) <= -15000000 && image.getRGB(i, j) > -17000000;
-
+        //return image.getRGB(i, j) <= -15000000 && image.getRGB(i, j) > -17000000;
+        return image.getRGB(i, j) != -1;
     }
 
     private static boolean checkHorizontalLine(BufferedImage image, int line) {

@@ -1,14 +1,17 @@
 package tletters.featureextraction;
 
+import tletters.glyph.Glyph;
+
 import java.awt.image.BufferedImage;
-import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Extractor {
 
-    protected Properties properties;
+    protected List<Glyph> glyphs;
 
     public Extractor() {
-        properties = new Properties();
+        glyphs = new ArrayList<>();
     }
 
     public void extract(ExtractionAlgorithm algorithm, BufferedImage image, String featureName) {
@@ -16,8 +19,8 @@ public abstract class Extractor {
         save(featureName, features);
     }
 
-    abstract Properties load();
+    public abstract List<Glyph> load();
 
-    abstract void save(String featureName, double[] features);
+    public abstract void save(String featureName, double[] features);
 
 }

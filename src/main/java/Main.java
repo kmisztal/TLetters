@@ -1,6 +1,8 @@
+import tletters.featureextraction.ExtractionAlgorithm;
+import tletters.featureextraction.Extractor;
+import tletters.featureextraction.SqlExtractor;
 import tletters.featureextraction.Zoning;
 import tletters.glyph.Glyph;
-import tletters.glyph.LanguageType;
 import tletters.glyphclassification.GlyphClassifier;
 import tletters.glyphextraction.GlyphExtractor;
 import tletters.imagegeneration.ImageGenerator;
@@ -10,7 +12,6 @@ import tletters.knnclassification.KNNClassifier;
 
 import java.awt.Font;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by mariuszbeltowski on 23/04/16.
@@ -18,21 +19,15 @@ import java.util.stream.Collectors;
 public class Main {
 
     public static void main(String[] args) {
+        Extractor extractor = new SqlExtractor("org.sqlite.JDBC", "src/main/resources/sqlite/zoning_combo");
         ImageGenerator imageGenerator = new ImageGenerator();
-        String letters = "abcdefghijklmnoprstuwyzABCDEFGHIJKLMNOPRSTUWYZ";
-        Font font = new Font("Arial", Font.PLAIN, 16);
-        imageGenerator.generateImage(font, 48, letters, 0);
+        Font font = new Font("Perpetua", Font.PLAIN, 16); //font unpresent in vectors database
         GlyphExtractor glyphExtractor = new GlyphExtractor();
-        glyphExtractor.setImage(imageGenerator.getGeneratedImage());
         ImageScaler imageScaler = new ImageScaler();
-        Zoning zoning = new Zoning();
-        final int[] i = {0};
-        List<Glyph> glyphList = glyphExtractor.scalpel().stream()
-                .map(imageScaler::scalImage)
-                .map(image -> new Glyph(zoning.extractFeatures(image), LanguageType.GENERAL_PL, letters.charAt(i[0]++)))
-                .collect(Collectors.toList());
-        GlyphClassifier glyphClassifier = new GlyphClassifier(new KNNClassifier<Double>(2), new EuclideanDistanceMeter<Double>(), glyphList);
-        String text = "Krzysztof Misztal";
+        ExtractionAlgorithm zoning = new Zoning();
+        List<Glyph> glyphList = extractor.load();
+        GlyphClassifier glyphClassifier = new GlyphClassifier(new KNNClassifier<Double>(4), new EuclideanDistanceMeter<Double>(), glyphList);
+        String text = "K r z y s z t o f M i s z t a l";
         imageGenerator.generateImage(font, 24, text, 0);
         glyphExtractor.setImage(imageGenerator.getGeneratedImage());
         glyphExtractor.scalpel().stream()

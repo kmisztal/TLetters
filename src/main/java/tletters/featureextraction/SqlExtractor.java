@@ -1,5 +1,8 @@
 package tletters.featureextraction;
 
+import tletters.glyph.Glyph;
+import tletters.glyph.LanguageType;
+
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.Statement;
@@ -7,7 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Properties;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,7 +21,7 @@ public class SqlExtractor extends Extractor {
 
     private static final String DEFAULT_DRIVER = "org.sqlite.JDBC";
     private static final String DEFAULT_URL = "jdbc:sqlite:";
-    private static final String DEFAULT_DB_PATH = "src/main/resources/sqlite/features.db";
+    private static final String DEFAULT_DB_PATH = "src/main/resources/sqlite/features";
     private static final String DEFAULT_DB_EXTENSION = ".db";
     private static final String DEFAULT_TABLE_NAME = "features";
 
@@ -27,7 +30,7 @@ public class SqlExtractor extends Extractor {
 
     public SqlExtractor() {
         super();
-        init(DEFAULT_DRIVER, DEFAULT_URL + DEFAULT_DB_PATH);
+        init(DEFAULT_DRIVER, DEFAULT_DB_PATH);
     }
 
     public SqlExtractor(String driver, String url) {
@@ -69,20 +72,26 @@ public class SqlExtractor extends Extractor {
     }
 
     @Override
-    public Properties load() {
+    public List<Glyph> load() {
         try {
             String query = "SELECT * FROM " + DEFAULT_TABLE_NAME;
             ResultSet result = stat.executeQuery(query);
             String name, features;
+            double[] featureVector;
             while (result.next()) {
                 name = result.getString("name");
                 features = result.getString("features");
-                properties.put(name, features);
+                String[] temp = features.split("  ");
+                featureVector = new double[temp.length];
+                for(int i = 0; i < temp.length; i++) {
+                    featureVector[i] = Double.valueOf(temp[i]);
+                }
+                glyphs.add(new Glyph(featureVector, LanguageType.GENERAL_PL, name.charAt(0)));
             }
         } catch (SQLException ex) {
             Logger.getLogger(SqlExtractor.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return properties;
+        return glyphs;
     }
 
     @Override

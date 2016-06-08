@@ -57,10 +57,7 @@ public class GlyphClassifier {
 
     public char classify(double[] vector) {
         classifierFit();
-        List<Double> listVector = new ArrayList<>();
-        for (double d : vector) {
-            listVector.add(d);
-        }
+        List<Double> listVector = new ArrayList<>(Arrays.stream(vector).boxed().collect(Collectors.toList()));
         return (char) (classifier.predict(listVector));
     }
 

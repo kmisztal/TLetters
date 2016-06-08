@@ -43,7 +43,9 @@ public class KNNClassifier<VAL extends Number> implements Classifier<VAL> {
             } else if (dist < neighbours.last().distance) {
                 neighbours.add(new Pair(dist, objClass));
                 //can be ommited, but it changes complexity from O(n*logn) to O(n*logK)
-                neighbours.remove(neighbours.last());
+                if (neighbours.size() > K) {
+                    neighbours.remove(neighbours.last());
+                }
             }
         }
         // count classes
@@ -51,9 +53,9 @@ public class KNNClassifier<VAL extends Number> implements Classifier<VAL> {
         for (Pair p : neighbours) {
             Integer valueWrapper = classCounter.get(p.objClass);
             if (valueWrapper == null) {
-                classCounter.put(p.objClass, new Integer(1));
+                classCounter.put(p.objClass, 1);
             } else {
-                valueWrapper++;
+                classCounter.put(p.objClass, valueWrapper + 1);
             }
         }
         // find most common class
