@@ -36,4 +36,18 @@ public class GlyphTest {
         new Glyph(new double[0], LanguageType.GENERAL_PL, 'a');
         new Glyph(new double[0], LanguageType.GENERAL_PL, 'A');
     }
+
+    @Test
+    public void testWillThrowExceptionWhenTryingToMakeDigitUppercase() {
+        expectedEx.expect(IllegalArgumentException.class);
+        expectedEx.expectMessage("Character case and glyphCase do not match");
+        new Glyph(new double[0], LanguageType.GENERAL_PL, '2').setGlyphCase(Glyph.GlyphCase.UPPER);
+    }
+
+    @Test
+    public void testCanBeConstructedWithoutExceptionsForLowercaseDigit() {
+        expectedEx.expect(IllegalArgumentException.class);
+        new Glyph(new double[0], LanguageType.GENERAL_PL, '9').setGlyphCase(Glyph.GlyphCase.LOWER);
+    }
+
 }
