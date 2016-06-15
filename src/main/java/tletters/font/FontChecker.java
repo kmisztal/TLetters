@@ -15,8 +15,8 @@ import java.nio.file.StandardCopyOption;
  */
 public class FontChecker {
 
-    public static final char[] SPECIAL_CHARS = {'\u0261', '\u0260', '\u0263', '\u0262', '\u0281', '\u0280', '\u0322',
-            '\u0321', '\u0324', '\u0323', '\u0243', '\u0211', '\u0347', '\u0346', '\u0378', '\u0377', '\u0380', '\u0379'};
+    public static final char[] SPECIAL_CHARS = {'\u0105', '\u0104', '\u0107', '\u0106', '\u0119', '\u0118', '\u0142',
+            '\u0141', '\u0144', '\u0143', '\u00F3', '\u00D3', '\u015B', '\u015A', '\u017A', '\u0179', '\u017C', '\u017B'};
 
     public static boolean checkFont(String name) throws IOException, FontFormatException {
         Font font = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("src/main/resources/fonts/" + name));
