@@ -27,16 +27,21 @@ public class AlgorithmComparator {
 
     private final Map<String, ExtractionAlgorithm> algorithmMap;
     private final List<Font> fonts;
+    private final GlyphListProvider glyphListProvider;
     private List<Glyph> glyphList;
     private int dataAmount = DEFAULT_DATA_AMOUNT;
     private String regex = DEFAULT_REGEX;
     private boolean isNames = DEFAULT_ISNAMES;
+    private List<String> testData;
 
     public AlgorithmComparator(
             Map<String, ExtractionAlgorithm> algorithmMap,
-            List<Font> fonts) {
+            List<Font> fonts,
+            GlyphListProvider glyphListProvider) {
         this.algorithmMap = algorithmMap;
         this.fonts = fonts;
+        this.glyphListProvider = glyphListProvider;
+        testData = generateTestTexts();
     }
 
     /**
@@ -72,23 +77,30 @@ public class AlgorithmComparator {
      * @return map: key - algorithm name, value - RecognitionTestResult
      */
     public Map<String, RecognitionTestResult> compareRecognitionUsingOneClassifier(Classifier classifier) {
-        List<String> testData = generateTestTexts();
         /*uncomment to see test data*/
 //        System.out.println(Arrays.toString(testData.toArray()));
 
         Map<String, RecognitionTestResult> results = new HashMap<>();
         for (Map.Entry<String, ExtractionAlgorithm> algorithmEntry : algorithmMap.entrySet()) {
             Long startTime = System.currentTimeMillis();
-            int successes = 0;
+            int successes = 0, allLetters=0;
             for (Font font : fonts) {
                 for (String text : testData) {
-                    String resultText = recognize(algorithmEntry.getValue(), classifier, font, text, 24);
-                    if (resultText.equals(text)) successes++;
+                    String resultText = recognize(
+                            glyphListProvider.provide(algorithmEntry.getKey()),
+                            algorithmEntry.getValue(),
+                            classifier,
+                            font, text, 24);
+                    for(int i =0; i<text.length();i++){
+                        allLetters++;
+                        if(i>=resultText.length()) continue;
+                        if(text.toUpperCase().charAt(i)==resultText.toUpperCase().charAt(i)) successes++;
+                    }
                     /*uncomment to see invidual compare results*/
 //                    System.out.println(resultText+"=="+text);
                 }
             }
-            Float successRate = (float) successes / (testData.size() * fonts.size());
+            Float successRate = (float) successes /allLetters;
             results.put(algorithmEntry.getKey(),
                     new RecognitionTestResult(System.currentTimeMillis() - startTime, successRate));
         }
@@ -108,14 +120,14 @@ public class AlgorithmComparator {
                 .collect(Collectors.toList());
     }
 
-    public String recognize(ExtractionAlgorithm algorithm, Classifier classifier,
+    public String recognize(List<Glyph> glyphs,ExtractionAlgorithm algorithm, Classifier classifier,
                             Font font, String text, float fontSize) {
-        return recognize(algorithm, classifier, font, text, fontSize, 0);
+        return recognize(glyphs, algorithm, classifier, font, text, fontSize, 0);
     }
 
-    public String recognize(ExtractionAlgorithm algorithm, Classifier classifier,
+    public String recognize(List<Glyph> glyphs, ExtractionAlgorithm algorithm, Classifier classifier,
                             Font font, String text, float fontSize, float noisePercentage) {
-        GlyphClassifier glyphClassifier = new GlyphClassifier(classifier, new EuclideanDistanceMeter<Double>(), glyphList);
+        GlyphClassifier glyphClassifier = new GlyphClassifier(classifier, new EuclideanDistanceMeter<Double>(), glyphs);
         ImageGenerator imageGenerator = new ImageGenerator();
         GlyphExtractor glyphExtractor = new GlyphExtractor();
         ImageScaler imageScaler = new ImageScaler();
@@ -130,7 +142,7 @@ public class AlgorithmComparator {
         return result.toString();
     }
 
-    private List<String> generateTestTexts() {
+    public List<String> generateTestTexts() {
         if (!isNames) {
             Faker faker = new Faker();
             return Stream.generate(() -> faker.regexify(regex)).limit(dataAmount).collect(Collectors.toList());
@@ -138,5 +150,9 @@ public class AlgorithmComparator {
             Name name = new Faker().name();
             return Stream.generate(name::firstName).limit(dataAmount).collect(Collectors.toList());
         }
+    }
+
+    public List<String> getTestData() {
+        return testData;
     }
 }
