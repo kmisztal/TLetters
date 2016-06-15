@@ -52,8 +52,8 @@ public class ImageUtils {
         Graphics2D graphics = image.createGraphics();
         graphics.setFont(font);
         FontMetrics metrics = graphics.getFontMetrics();
-        int height = metrics.getHeight() + 4;
-        int width = metrics.stringWidth(text) + 4;
+        int height = metrics.getHeight() + 24;
+        int width = metrics.stringWidth(text) + 24;
         graphics.dispose();
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         graphics = image.createGraphics();
@@ -62,14 +62,17 @@ public class ImageUtils {
         graphics.setFont(font);
         graphics.setRenderingHints(ImageUtils.RENDERING_PROPERTIES);
         graphics.clearRect(0, 0, width, height);
-        graphics.drawString(text, 0, metrics.getAscent() + 2);
+        graphics.drawString(text, 0, metrics.getAscent() + 12);
         graphics.dispose();
         return image;
     }
 
     public static boolean isBlack(BufferedImage image, int i, int j) {
-        //return image.getRGB(i, j) <= -15000000 && image.getRGB(i, j) > -17000000;
         return image.getRGB(i, j) != -1;
+    }
+
+    public static boolean isBlackAlt(BufferedImage image, int i, int j) {
+        return image.getRGB(i, j) <= -15000000 && image.getRGB(i, j) > -17000000;
     }
 
     private static boolean checkHorizontalLine(BufferedImage image, int line) {
