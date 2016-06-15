@@ -109,7 +109,7 @@ public class AlgorithmComparator {
 
     public void processOnePreparation(Font font, ExtractionAlgorithm algorithm) {
         ImageGenerator imageGenerator = new ImageGenerator();
-        imageGenerator.generateImage(font, 48, ALPHABET, 0);
+        imageGenerator.generateImage(font, 48, ALPHABET.replaceAll(".(?!$)", "$0 "), 0);
         GlyphExtractor glyphExtractor = new GlyphExtractor();
         glyphExtractor.setImage(imageGenerator.getGeneratedImage());
         ImageScaler imageScaler = new ImageScaler();
@@ -131,7 +131,7 @@ public class AlgorithmComparator {
         ImageGenerator imageGenerator = new ImageGenerator();
         GlyphExtractor glyphExtractor = new GlyphExtractor();
         ImageScaler imageScaler = new ImageScaler();
-        imageGenerator.generateImage(font, fontSize, text, noisePercentage);
+        imageGenerator.generateImage(font, fontSize, text.replaceAll(".(?!$)", "$0 "), noisePercentage);
         glyphExtractor.setImage(imageGenerator.getGeneratedImage());
         StringBuilder result = new StringBuilder();
         glyphExtractor.scalpel().stream()
